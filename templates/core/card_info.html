@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Card Info</title>
+</head>
+<body>
+<form id="add_owner_form" method="post" action="/denak/owner/add/" enctype="multipart/form-data">
+    {% csrf_token %}
+    <p>Id de la tarjeta: {{ card_info.serial_number0 }}, {{ card_info.serial_number1 }}, {{ card_info.serial_number2 }}, {{ card_info.serial_number3 }}, {{ card_info.check_byte }}</p>
+    <p><input type="hidden" name="card_owned" value="{{ card_info.id }}"></p>
+    <p>Nombre: <input type="text" name="first_name" value="" size="50"></p>
+    <p>Apellido: <input type="text" name="last_name" value="" size="50"></p>
+    <p>Acceso permitido<input type="checkbox" name="access_granted" value="true"></p>
+    <input type="submit" name="submit" value="Añadir propietario a esta tarjeta">
+</form>
+</body>
+</html>

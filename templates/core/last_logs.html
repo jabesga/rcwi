@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Administration</title>
+
+    <style type="text/css">
+
+        table {
+             display:table;
+             margin-right:auto;
+             margin-left:auto;
+             width:100%;
+             border-collapse: collapse;
+         }
+
+        th, td {
+            
+            border: 1px solid black;
+        }
+        
+    </style>
+</head>
+<body>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Owner</th>
+                <th>Card ID</th>
+                <th>Datetime</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in info_ten_logs %}
+            <tr>
+                <td>{{ log.0 }}</td>
+                <td>{{ log.1 }}</td>
+                <td>{{ log.2|date:"Y-m-d H:i:s" }}</td>
+            </tr>
+            {% empty %}
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

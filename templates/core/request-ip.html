@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<p>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Actualizar IP</title>
+    <meta content='width=device-width, initial-scale=1' name='viewport'/>
+    <script type="text/javascript">
+        function jumpToNextInput(element, content){
+            if (content.length == element.maxLength){
+                next = element.tabIndex;
+                if (next < document.update_hostname_form.elements.length){
+                    document.update_hostname_form.elements[next].focus();
+                }
+            }
+        }
+    </script>
+</head>
+
+<body>
+
+<p><b>Current hostname: {{ current_hostname }}</b></p>
+<form name="update_hostname_form" method="post" action="/denak/update-ip/">
+    {% csrf_token %}
+    <input type="text" name="hostname1" maxlength="3" size="3" tabIndex="2" onkeyup="jumpToNextInput(this,this.value)">
+    .
+    <input type="text" name="hostname2" maxlength="3" size="3" tabIndex="3" onkeyup="jumpToNextInput(this,this.value)">
+    .
+    <input type="text" name="hostname3" maxlength="3" size="3" tabIndex="4" onkeyup="jumpToNextInput(this,this.value)">
+    .
+    <input type="text" name="hostname4" maxlength="3" size="3" tabIndex="5" onkeyup="jumpToNextInput(this,this.value)">
+
+    <input type="submit" value="Actualizar dirección IP manualmente">
+</form>
+
+</body>
+</html>

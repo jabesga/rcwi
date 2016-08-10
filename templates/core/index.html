@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1 maximum-scale=1, user-scalable=no">
+  <title>RCWI</title>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="http://getbootstrap.com/dist/css/bootstrap.min.css">
+  <!-- Custom styles for this template -->
+  <link rel="stylesheet" href="http://getbootstrap.com/examples/carousel/carousel.css">
+
+  <style>
+        body { padding-top: 70px; }
+
+        input {
+            width: 100%;
+            height: 50px;
+        }
+        h1, h2, h3 {
+            width: 100%;
+            text-align: center;
+        }
+
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container">
+        <!-- El logotipo y el icono que despliega el menú se agrupan
+             para mostrarlos mejor en los dispositivos móviles -->
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse"
+                  data-target=".navbar-ex1-collapse">
+            <span class="sr-only">Desplegar navegación</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Menu</a>
+        </div>
+       
+        <!-- Agrupar los enlaces de navegación, los formularios y cualquier
+             otro elemento que se pueda ocultar al minimizar la barra -->
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+          <ul class="nav navbar-nav">
+            <li id="menuVerja" class="active"><a href="#" onclick="activeVerja()">Control de la verja del polígono</a></li>
+            <li id="menuPersiana"><a href="#" onclick="activePersiana()">Control de la persiana</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div id="verja">
+        <h1>INTERFAZ WEB DE CONTROL REMOTO (RCWI)</h1>
+
+        <h2 id="status"></h2>
+
+        <form id='button_form' method="post">
+            {% csrf_token %}
+            <input style="" type="submit" id="button" value="ABRIR PUERTA DEL POLÍGONO">
+        </form>
+    </div>
+
+
+    <div id="persiana" class="hidden">
+        <h2>¿HAS PROBADO A USAR LA TARJETA ANTES?</h2>
+        <input onclick="fase1()" style="" type="submit" id="button" value="NO">
+        <h3 class="hidden" id="fase1">Pues usa primero la tarjeta y vuelve si no puedes cerrar/abrir la persiana con ella</h3>
+        <p></p><input onclick="fase2()" style="" type="submit" id="button" value="¿Donde está el SI?"></p>
+        <div class="hidden" id="fase2">
+            <h3>Aquí:</h3>
+            <input onclick="mostrarPersiana()" style="" type="submit" id="button" value="SI, pero no funciona el sistema de tarjeta y ya he avisado a Jonander">
+        </div>
+        
+        <div id="tarjetantes" class=hidden>
+            
+            <h1>INTERFAZ WEB DE CONTROL DE PERSIANA</h1>
+    
+            <h2 id="status"></h2>
+    
+            <form id='up_door_form' method="post" action="" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input style="" type="submit" id="up_button" value="SUBIR PERSIANA">
+            </form>
+            <br>
+            <form id='show_down_form'>
+                <input type="number" id="check_number" style="width:50%; margin-left:20%;">
+                <input type="button" onclick="myFunction()" id="show_down_button" value="MOSTRAR BOTON CERRAR">
+            </form>
+    
+            <form id='down_door_form' method="post" action="/ariz/puerta/bajar/" enctype="multipart/form-data" style="display: none">
+                {% csrf_token %}
+                <input style="" type="submit" id="down_button" value="BAJAR PERSIANA">
+            </form>
+        </div>
+    </div>
+    <!-- JQUERY -->
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script> -->
+    <script src="http://code.jquery.com/jquery.js"></script>
+
+    <!-- BOOTSTRAP JS -->
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+
+    <script>
+          $('#button_form').on('submit', function(event){
+              document.getElementById("button").style.display = 'none';
+              document.getElementById("status").innerHTML = "ABRIENDO PUERTA...";
+              event.preventDefault();
+              $.ajax({
+                  url : "/open-gate/",
+                  type : "POST",
+                  data : { "csrfmiddlewaretoken": "{{csrf_token}}" },
+
+                  success : function(json) {
+                      if(json['success'] == true){
+                          document.getElementById("status").innerHTML = "PUERTA DEL POLÍGONO ABIERTA";
+                      }
+                      else if(json['success'] == false){
+                          document.getElementById("status").innerHTML = "HUBO UN PROBLEMA DE CONEXIÓN";
+                      }
+                  },
+                  error : function(xhr,errmsg,err) {
+                      console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+                      document.getElementById("status").innerHTML = "CONSULTAR ERROR EN LA CONSOLA DE JS";
+                  }
+              });
+          });
+    </script>
+
+    <script>
+        function fase1(){
+            $("#fase1").removeClass('hidden');
+        }
+        function fase2(){
+            $("#fase2").removeClass('hidden');
+        }
+        function mostrarPersiana(){
+            $("#tarjetantes").removeClass('hidden');
+        }
+        $('.navbar-collapse a').click('li', function() {
+            var navbar_toggle = $('.navbar-toggle');
+            if (navbar_toggle.is(':visible')) {
+                navbar_toggle.trigger('click');
+            }
+        });
+        function activeVerja(){
+            $("#verja").removeClass('hidden');
+            $("#persiana").addClass('hidden');
+            $("#menuVerja").addClass('active');
+            $("#menuPersiana").removeClass('active');
+        }
+        function activePersiana(){
+            $("#verja").addClass('hidden');
+            $("#persiana").removeClass('hidden');
+            $("#menuPersiana").addClass('active');
+            $("#menuVerja").removeClass('active');
+        }
+    </script>
+
+    <script>
+        function myFunction(){
+            var number = document.getElementById("check_number").value;
+            if(number==5885){
+                document.getElementById("show_down_form").style.display = 'none';
+                document.getElementById("down_door_form").style.display = 'block';
+            }
+        }
+    </script>
+    <script>
+        $('#up_door_form').on('submit', function(event){
+            document.getElementById("up_button").style.display = 'none';
+            document.getElementById("down_button").style.display = 'none';
+            document.getElementById("status").innerHTML = "SUBIENDO PERSIANA...";
+            event.preventDefault();
+            $.ajax({
+                url : "/ariz/puerta/subir/",
+                type : "POST",
+                data : { "csrfmiddlewaretoken": "{{csrf_token}}" },
+                timeout: 35000,
+
+                success : function(json) {
+                    if(json['success'] == true){
+                        document.getElementById("status").innerHTML = "PERSIANA ABIERTA";
+                    }
+                    else if(json['success'] == false){
+                        document.getElementById("status").innerHTML = "HUBO UN PROBLEMA DE CONEXIÓN";
+                    }
+                },
+                error : function(xhr,errmsg,err) {
+                    console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+                    document.getElementById("status").innerHTML = "CONSULTAR ERROR EN LA CONSOLA DE JS";
+                }
+            });
+        });
+    </script>
+
+    <script>
+        $('#down_door_form').on('submit', function(event){
+            document.getElementById("up_button").style.display = 'none';
+            document.getElementById("down_button").style.display = 'none';
+            document.getElementById("status").innerHTML = "BAJANDO PERSIANA...";
+            event.preventDefault();
+            $.ajax({
+                url : "/ariz/puerta/bajar/",
+                type : "POST",
+                data : { "csrfmiddlewaretoken": "{{csrf_token}}" },
+                timeout: 35000,
+
+                success : function(json) {
+                    if(json['success'] == true){
+                        document.getElementById("status").innerHTML = "PERSIANA CERRADA";
+                    }
+                    else if(json['success'] == false){
+                        document.getElementById("status").innerHTML = "HUBO UN PROBLEMA DE CONEXIÓN";
+                    }
+                },
+                error : function(xhr,errmsg,err) {
+                    console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+                    document.getElementById("status").innerHTML = "CONSULTAR ERROR EN LA CONSOLA DE JS";
+                }
+            });
+        });
+    </script>    
+
+</body>
+</html>

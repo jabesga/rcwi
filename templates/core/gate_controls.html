@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>RCWI</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <meta content='width=device-width, initial-scale=1' name='viewport'/>
+    <style>
+        input {
+            width: 100%;
+            height: 50px;
+        }
+        h1, h2 {
+            width: 100%;
+            text-align: center;
+        }
+    </style>
+
+</head>
+
+<body>
+<div>
+    <h1>INTERFAZ WEB DE CONTROL DE PERSIANA</h1>
+
+    <h2 id="status"></h2>
+
+    <form id='up_door_form' method="post" action="" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input style="" type="submit" id="up_button" value="SUBIR PERSIANA">
+    </form>
+    <br>
+    <form id='show_down_form'>
+        <input type="number" id="check_number" style="width:50%; margin-left:20%;">
+        <input type="button" onclick="myFunction()" id="show_down_button" value="MOSTRAR BOTON CERRAR">
+    </form>
+
+    <form id='down_door_form' method="post" action="/denak/ariz/puerta/bajar/" enctype="multipart/form-data" style="display: none">
+        {% csrf_token %}
+        <input style="" type="submit" id="down_button" value="BAJAR PERSIANA">
+    </form>
+</div>    
+    <script>
+        function myFunction(){
+            var number = document.getElementById("check_number").value;
+            if(number==5885){
+                document.getElementById("show_down_form").style.display = 'none';
+                document.getElementById("down_door_form").style.display = 'block';
+            }
+        }
+</script>
+<script>
+        $('#up_door_form').on('submit', function(event){
+            document.getElementById("up_button").style.display = 'none';
+            document.getElementById("down_button").style.display = 'none';
+            document.getElementById("status").innerHTML = "SUBIENDO PERSIANA...";
+            event.preventDefault();
+            $.ajax({
+                url : "/denak/ariz/puerta/subir/",
+                type : "POST",
+                data : { "csrfmiddlewaretoken": "{{csrf_token}}" },
+                timeout: 35000,
+
+                success : function(json) {
+                    if(json['success'] == true){
+                        document.getElementById("status").innerHTML = "PERSIANA ABIERTA";
+                    }
+                    else if(json['success'] == false){
+                        document.getElementById("status").innerHTML = "HUBO UN PROBLEMA DE CONEXIÓN";
+                    }
+                },
+                error : function(xhr,errmsg,err) {
+                    console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+                    document.getElementById("status").innerHTML = "CONSULTAR ERROR EN LA CONSOLA DE JS";
+                }
+            });
+        });
+</script>
+
+<script>
+        $('#down_door_form').on('submit', function(event){
+            document.getElementById("up_button").style.display = 'none';
+            document.getElementById("down_button").style.display = 'none';
+            document.getElementById("status").innerHTML = "BAJANDO PERSIANA...";
+            event.preventDefault();
+            $.ajax({
+                url : "/ariz/puerta/bajar/",
+                type : "POST",
+                data : { "csrfmiddlewaretoken": "{{csrf_token}}" },
+                timeout: 35000,
+
+                success : function(json) {
+                    if(json['success'] == true){
+                        document.getElementById("status").innerHTML = "PERSIANA CERRADA";
+                    }
+                    else if(json['success'] == false){
+                        document.getElementById("status").innerHTML = "HUBO UN PROBLEMA DE CONEXIÓN";
+                    }
+                },
+                error : function(xhr,errmsg,err) {
+                    console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+                    document.getElementById("status").innerHTML = "CONSULTAR ERROR EN LA CONSOLA DE JS";
+                }
+            });
+        });
+</script>
